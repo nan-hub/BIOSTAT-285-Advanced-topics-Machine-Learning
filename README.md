@@ -33,5 +33,5 @@
 
 ### HW4: 
 `python`
-- Neural network with one hidden laye
+- Neural network with one hidden layer
 
