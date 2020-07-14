@@ -1,0 +1,181 @@
+---
+title: \textbf BIOSTAT 285 Spring 2020 `Auto` Project 
+author: "Nan Liu"
+output:
+  pdf_document: default
+  html_document: default
+urlcolor: blue    
+header-includes: \usepackage{amsgen,amsmath,amstext,amsbsy,amsopn,amssymb,mathabx,amsthm,bm,bbm}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if(!require(ISLR)) { install.packages("ISLR", repos = "http://cran.us.r-project.org"); library(ISLR) }
+```
+\theoremstyle{definition}
+\newtheorem*{hint}{Hint}
+
+\theoremstyle{remark}
+\newtheorem*{rmk}{Remark}
+
+
+## Analysis on `Auto` dataset
+In this report, we will develop a model to predict whether a given car gets high or low gas mileage based on the `Auto` data set.
+
+### Definition of Gas Mileage Level
+In `auto` dataset, a car record is said to have "high" mileage if its miles per galon mgp is
+above or equal to the to median. Otherwise, it gets "low" gas mileage. So we create a binary variable, `mpg01`, that equals 1 if it gets "high" mileage and 0 if it gets "low" mileage.
+
+First let's import the data:
+```{r}
+library(ISLR) 
+library(tidyverse)
+data("Auto") 
+```
+
+
+Create the binary variable that indicates whether the car gets high or low gas mileage:
+```{r}
+set.seed(123)
+Auto <- Auto %>%
+  mutate (mpg01 = factor(ifelse(mpg > median(mpg), 1, 0)))
+```
+
+Display the summary statistics of Auto dataset
+```{r}
+summary(Auto)
+```
+  
+### Associations between `mgp01` and the other features.
+Let's explore the data graphically in order to investigate the association between `mgp01` and the other features.
+
+```{r echo=FALSE, fig.height=12, fig.width=15}
+layout(matrix(1:9, nrow = 3, byrow = TRUE))
+pred <- colnames(Auto)[2:8]
+pred
+for(x in pred)
+{
+  plot(x = Auto[[x]], y = Auto$mpg, col = ifelse(Auto$mpg01 == 1, "green", "blue"),
+       xlab = x, ylab = "mpg", main=paste("mpg vs", x))
+  abline(h=median(Auto$mpg))
+  legend("topright", legend = c("High Mileage", "Low Mileage"), col = c("green","blue"), cex = 0.8, pch = 1)
+}
+```
+From the scatter plot, we see the cars with higher cylinders, displacement, horsepower and weights tend to have low gas mileage.
+
+\newpage
+Now let's display the boxplot
+
+```{r echo=FALSE, fig.height=12, fig.width=15}
+layout(matrix(1:9, nrow = 3, byrow = TRUE))
+for(x in pred){
+  boxplot(Auto[[x]] ~ Auto$mpg01,
+          ylab = x, xaxt = 'n', xlab = "mpg", 
+          main = paste(x, "vs gas mileage level"))
+  axis(1, at = 1:2, labels = c("Low", "High"))
+}
+```
+The boxplot we conclude that the large proportion of cars with low gas mileage have high cylinders, displacement, horsepower and weight. We could not see huge difference of accelaration, year and origin between cars with low gas mileage and and high gas mileage.
+
+From the two plots above, we conclude that `cylinders`, `displacement`, `horsepower` and `weight` seem mostly likely to be useful in predicting `mpg01`. So we will use these four variables in the following predicting models.
+ 
+### Linear Discriminant Analysis (LDA) 
+
+**First, we split the data into a training set and a test set.**
+    
+```{r}
+#split data in to 70% traing set and 30% test set
+set.seed(123)
+s <- sample(nrow(Auto), floor(nrow(Auto)*0.7), replace = F)
+training <- Auto[s,]
+test <- Auto[-s,]
+```
+
+**Then perform LDA on the training data set to predict `mpg01`.**
+```{r}
+library(MASS)
+lda.fit <- lda(mpg01 ~ cylinders + displacement + horsepower + weight, data = training)
+```
+
+**Calculate the test error:**
+```{r}
+lda.pred <- predict(lda.fit, test)
+mean(lda.pred$class != test$mpg01)
+```
+The test error is about 11%.
+
+**Report the confusion matrix:**
+```{r}
+print("Confusion Matrix of LDA", quote = FALSE)
+lda.confusion <- table(Truth = test$mpg01,
+                       Predict = lda.pred$class)
+addmargins(lda.confusion)
+```
+
+The false positive (Type I error) is $\frac{10}{60} = 0.167$, and the false negative rate is $\frac{3}{58} = 0.052$
+
+### Quadratic Discriminant Analysis (QDA)
+
+Then we perform QDA on the training data to predict `mpg01` 
+```{r}
+qda.fit <- qda(mpg01 ~ cylinders + displacement + horsepower + weight, data = training)
+```
+  
+
+**Calculate the test error:**
+```{r}
+qda.pred <- predict(qda.fit, test)$class
+mean(qda.pred != test$mpg01)
+```
+The test error is about 10%. The QDA method is slighlt better than LDA method in our Auto dataset.
+
+**Report the confusion matrix:**
+```{r}
+print("Confusion Matrix of QDA", quote = FALSE)
+qda.confusion <- table(Truth = test$mpg01,
+                       Predict = qda.pred)
+addmargins(qda.confusion)
+```
+
+The false positive (Type I error) is $\frac{7}{60} = 0.117$, and the false negative rate is $\frac{5}{58} = 0.086$
+
+### Logistic Regression
+Finally we perform logistic regression on the training data to predict `mpg01`.
+  
+```{r}
+glm.fit <- glm(mpg01 ~ cylinders + displacement + horsepower + weight, 
+               data = training, family = binomial)
+```
+
+**Calculate the test error:**
+```{r}
+prob <- predict(glm.fit, test, type = "response")
+glm.pred <- ifelse(prob > 0.5, 1, 0)
+mean(glm.pred != test$mpg01)
+```
+
+The test error is about 11%.
+
+**Report the confusion matrix:**
+```{r}
+print("Confusion Matrix of Logistic Regression", quote = FALSE)
+glm.confusion <- table(Truth = test$mpg01,
+                       Predict = glm.pred)
+addmargins(glm.confusion)
+```
+
+The false positive (Type I error) is $\frac{7}{60} = 0.117$, and the false negative rate is $\frac{6}{58} = 0.103$.
+
+### Comparison and Conclusion
+
+Report the test error, false positive rate and false negative rate:
+
+
+|              |**LDA**|**QDA**|**Logistic Regression**|
+|:------------:|:-----:|:-----:|:-----:|
+|**Test Error**|`0.110`|`0.102`|`0.110`|
+|**FP**        |`0.167`|`0.117`|`0.117`|
+|**FN**        |`0.052`|`0.086`|`0.103`|
+
+From the table we see the test error from QDA method is lowest. So we conclude QDA performs best in the Auto dataset to predict whether a given car gets high or low gas mileage. Moreover, the LDA method and Logistic Regression method both result in unblanced false positive rate and false negative rate. In comparsion, the QDA method gives a much stabler model in predicting whether a given car gets high or low gas mileage.
+
