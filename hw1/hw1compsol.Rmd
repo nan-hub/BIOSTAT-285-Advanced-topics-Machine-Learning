@@ -43,7 +43,7 @@ epsilon <- rnorm(100)
   (b) Generate a response vector $\bm{Y}$ of length $n = 100$ according to the model $$ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon, $$ where $\beta_0 = 3$, $\beta_1 = 2$, $\beta_2 = -3$, $\beta_3 = 0.3$.
     
 ```{r}
-y <- 3 + 2*x -3*x^2 + 0.3*x^3 + epsilon
+y <- 3 + 2 * x -3 * x^2 + 0.3 * x^3 + epsilon
 ```
     
 
@@ -51,9 +51,9 @@ y <- 3 + 2*x -3*x^2 + 0.3*x^3 + epsilon
     
 ```{r}
 library(leaps)
-leaps <- regsubsets(y~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+I(x^6)+
-                      I(x^7)+I(x^8)+I(x^9)+I(x^10),
-                    data=data.frame(x=x,y=y),nvmax=10)
+leaps <- regsubsets(y~x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6) +
+                      I(x^7) + I(x^8) + I(x^9) + I(x^10),
+                    data = data.frame(x = x, y = y), nvmax = 10)
 (summary <- summary(leaps))
 ```
 
@@ -61,11 +61,11 @@ leaps <- regsubsets(y~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+I(x^6)+
 
 ```{r}
 #Cp
-plot(1:10, summary$cp, xlab="Number of Parameters", ylab="Cp", type = "l")
+plot(1:10, summary$cp, xlab = "Number of Parameters", ylab = "Cp", type = "l")
 min_cp <- min(summary$cp)
-points(c(1:10)[summary$cp==min_cp], min_cp, pch=1, col="purple")
+points(c(1:10)[summary$cp == min_cp], min_cp, pch = 1, col = "purple")
 #report the coefficients
-lm1<-lm(y~I(x)+I(x^2)+I(x^7), data=data.frame(x=x,y=y) )
+lm1 <- lm(y ~ I(x) + I(x^2) + I(x^7), data = data.frame(x = x,y = y))
 summary(lm1)
 ```
 According to Cp, the model contains 3 predictors which are $X, X^2, X^7$
@@ -73,25 +73,25 @@ The best models obtained according to $C_p$ is: $Y$ = 3.08 + 2.36 * $X$-3.17* $X
 
 ```{r}
 #BIC
-plot(1:10, summary$bic, xlab="Number of Parameters", ylab="BIC", type = "l")
+plot(1:10, summary$bic, xlab = "Number of Parameters", ylab = "BIC", type = "l")
 min_bic <- min(summary$bic)
-points(c(1:10)[summary$bic==min_bic], min_bic, pch=1, col="purple")
+points(c(1:10)[summary$bic == min_bic], min_bic, pch=1, col = "purple")
 
 #report the coefficients
-lm2<-lm(y~I(x)+I(x^2)+I(x^7), data=data.frame(x=x,y=y) )
-summary(lm2)
+lm2 <- lm(y ~ I(x) + I(x^2) + I(x^7), data = data.frame(x = x,y = y))
+summary(lm2) 
 ```
 According to BIC, the model contains 3 predictors which are $X, X^2, X^7$
 The best models obtained according to BIC is: $Y$ = 3.08 + 2.36 * $X$-3.17* $X^2$ + 0.01 * $X^7$
 
 ```{r}
 #Adjusted R^2
-plot(1:10, summary$adjr2, xlab="Number of Parameters", ylab="Adjusted R^2", type = "l")
+plot(1:10, summary$adjr2, xlab = "Number of Parameters", ylab = "Adjusted R^2", type = "l")
 max_adjr2 <- max(summary$adjr2)
-points(c(1:10)[summary$adjr2==max_adjr2], max_adjr2, pch=1, col="purple")
+points(c(1:10)[summary$adjr2 == max_adjr2], max_adjr2, pch = 1, col = "purple")
 
 #report the coefficients
-lm3<-lm(y~I(x)+I(x^2)+I(x^7), data=data.frame(x=x,y=y) )
+lm3 <- lm(y ~ I(x) + I(x^2) + I(x^7), data=data.frame(x = x, y = y))
 summary(lm3)
 ```
 
@@ -102,32 +102,32 @@ The best models obtained according to adjusted $R^2$ is: $Y$ = 3.08 + 2.36 * $X$
     
 ```{r}
 #forward stepwise selection
-leaps1 <- regsubsets(y~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+
-                       I(x^6)+I(x^7)+I(x^8)+I(x^9)+I(x^10),
-                     data=data.frame(x=x,y=y),nvmax=10, method="forward")
+leaps1 <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) +
+                       I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10),
+                     data = data.frame(x = x, y = y), nvmax = 10, method = "forward")
 (summary1 <- summary(leaps1))
 ```
   
     
 ```{r}
 #Cp
-plot(1:10, summary1$cp, xlab="Number of Parameters", ylab="Cp", type = "l")
+plot(1:10, summary1$cp, xlab = "Number of Parameters", ylab = "Cp", type = "l")
 min_cp1 <- min(summary1$cp)
-points(c(1:10)[summary1$cp==min_cp1], min_cp1, pch=1, col="purple")
+points(c(1:10)[summary1$cp == min_cp1], min_cp1, pch = 1, col = "purple")
 ```
 
 ```{r}
 #BIC
 plot(1:10, summary1$bic, xlab="Number of Parameters", ylab="BIC", type = "l")
 min_bic1 <- min(summary1$bic)
-points(c(1:10)[summary1$bic==min_bic1], min_bic1, pch=1, col="purple")
+points(c(1:10)[summary1$bic == min_bic1], min_bic1, pch = 1, col = "purple")
 ```
 
 ```{r}
 #Adjusted R^2
-plot(1:10, summary1$adjr2, xlab="Number of Parameters", ylab="Adjusted R^2", type = "l")
+plot(1:10, summary1$adjr2, xlab = "Number of Parameters", ylab = "Adjusted R^2", type = "l")
 max_adjr2_1 <- max(summary1$adjr2)
-points(c(1:10)[summary1$adjr2==max_adjr2_1], max_adjr2_1, pch=1, col="purple")
+points(c(1:10)[summary1$adjr2 == max_adjr2_1], max_adjr2_1, pch = 1, col = "purple")
 ```
 
 
@@ -137,41 +137,41 @@ $Y$ = 3.08 + 2.36 * $X$-3.17* $X^2$ + 0.01 * $X^7$
 Next let's do backwards stepwise selection:
 ```{r}
 #backward
-leapsback <- regsubsets(y~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+
-                       I(x^6)+I(x^7)+I(x^8)+I(x^9)+I(x^10),  
-                       data=data.frame(x=x,y=y),nvmax=10, method="backward")
+leapsback <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) +
+                       I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10),  
+                       data = data.frame(x = x, y = y), nvmax = 10, method = "backward")
 summaryback <- summary(leapsback)
 summaryback
 ```
 
 ```{r}
 #Cp
-plot(1:10, summaryback$cp, xlab="Number of Parameters", ylab="Cp", type = "l")
+plot(1:10, summaryback$cp, xlab = "Number of Parameters", ylab = "Cp", type = "l")
 min_cpback <- min(summaryback$cp)
-points(c(1:10)[summaryback$cp==min_cpback], min_cpback, pch=1, col="purple")
+points(c(1:10)[summaryback$cp == min_cpback], min_cpback, pch = 1, col = "purple")
 ```
 
 
 ```{r}
 #BIC
-plot(1:10, summaryback$bic, xlab="Number of Parameters", ylab="BIC", type = "l")
+plot(1:10, summaryback$bic, xlab = "Number of Parameters", ylab = "BIC", type = "l")
 min_bicback <- min(summaryback$bic)
-points(c(1:10)[summaryback$bic==min_bicback], min_bicback, pch=1, col="purple")
+points(c(1:10)[summaryback$bic == min_bicback], min_bicback, pch = 1, col = "purple")
 ```
 
 ```{r}
 #Adjusted R^2
-plot(1:10, summaryback$adjr2, xlab="Number of Parameters", ylab="Adjusted R^2", 
+plot(1:10, summaryback$adjr2, xlab = "Number of Parameters", ylab = "Adjusted R^2", 
      type = "l")
 max_adjr2_back <- max(summaryback$adjr2)
-points(c(1:10)[summaryback$adjr2==max_adjr2_back], max_adjr2_back, pch=1, col="purple")
+points(c(1:10)[summaryback$adjr2 == max_adjr2_back], max_adjr2_back, pch = 1, col = "purple")
 ```
 
 Using backwards stepwise selection, the best model selected from $C_p$, BIC, and adjusted $R^2$ all contain 3 predictors which are $X, X^2, X^9$. Next let's report the coefficients:
 
 ```{r}
 #report the coefficients
-lmback<-lm(y~I(x)+I(x^2)+I(x^9), data=data.frame(x=x,y=y) )
+lmback <- lm(y ~ I(x) + I(x^2) + I(x^9), data = data.frame(x = x, y = y) )
 summary(lmback)
 ```
 
@@ -183,12 +183,12 @@ This model is different from that in (c).
     
 ```{r}
 library(glmnet)
-xmatrix= model.matrix(y ~ x + I(x^2) + I(x^3) + I(x^4) + 
+xmatrix = model.matrix(y ~ x + I(x^2) + I(x^3) + I(x^4) + 
                         I(x^5) + I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10),  
-                      data = data.frame(x=x,y=y))[, -1]
+                      data = data.frame(x = x, y = y))[, -1]
 
 # Cross-validation to select lambda
-lasso.cv = cv.glmnet(xmatrix, y, alpha=1)
+lasso.cv = cv.glmnet(xmatrix, y, alpha = 1)
 lasso.cv$lambda.min
 plot(lasso.cv)
 
@@ -207,8 +207,8 @@ First let's perform best subset selection.
 y1 <- 3 + 7 * x^7 + epsilon
 #best subsets
 library(leaps)
-sub_full <- regsubsets(y~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+I(x^6)+I(x^7)+I(x^8)
-                    +I(x^9)+I(x^10),data=data.frame(x=x,y=y1),nvmax=10)
+sub_full <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6) + I(x^7) + I(x^8)
+                    + I(x^9) + I(x^10), data = data.frame(x = x, y = y1), nvmax = 10)
 sub_summary <- summary(sub_full)
 ```
 
@@ -216,29 +216,31 @@ sub_summary <- summary(sub_full)
 
 ```{r}
 #Cp
-plot(1:10, sub_summary$cp, xlab="Number of Parameters", ylab="Cp", type = "l")
+plot(1:10, sub_summary$cp, xlab = "Number of Parameters", ylab = "Cp", type = "l")
 subset_min_cp <- min(sub_summary$cp)
-points(c(1:10)[sub_summary$cp==subset_min_cp], subset_min_cp, pch=1, col="purple")
+points(c(1:10)[sub_summary$cp == subset_min_cp], subset_min_cp, pch = 1, col = "purple")
 #report coefficient
-coef(sub_full,2)
+coef(sub_full, 2)
 ```
 
 ```{r}
 #BIC
-plot(1:10, sub_summary$bic, xlab="Number of Parameters", ylab="BIC", type = "l")
+plot(1:10, sub_summary$bic, xlab = "Number of Parameters", ylab = "BIC", type = "l")
 subset_min_bic <- min(sub_summary$bic)
-points(c(1:10)[sub_summary$bic==subset_min_bic], subset_min_bic, pch=1, col="purple")
+points(c(1:10)[sub_summary$bic == subset_min_bic], subset_min_bic, pch = 1, col = "purple")
 #report coefficient
-coef(sub_full,1)
+coef(sub_full, 1)
 ```
 
 ```{r}
 #adjusted r^2
-plot(1:10, sub_summary$adjr2, xlab="Number of Parameters", ylab="Adjusted R^2", type = "l")
+plot(1:10, sub_summary$adjr2, xlab = "Number of Parameters", 
+     ylab = "Adjusted R^2", type = "l")
 subset_max_adjr2 <- max(sub_summary$adjr2)
-points(c(1:10)[sub_summary$adjr2==subset_max_adjr2], subset_max_adjr2, pch=1, col="purple")
+points(c(1:10)[sub_summary$adjr2 == subset_max_adjr2], 
+       subset_max_adjr2, pch = 1, col="purple")
 #report coefficient
-coef(sub_full,4)
+coef(sub_full, 4)
 ```
 
 If we perform best subset selection, the best model obtained according to $C_p$ has 2 parameters, which are $X^2$ and $X^7$; the best model obtained according to $BIC$ has only 1 parameter, which is $X^7$; the best model obtained according to adjusted $R^2$ has 4 parameters, which are $X$, $X^2$, $X^3$ and $X^7$.
@@ -246,12 +248,12 @@ If we perform best subset selection, the best model obtained according to $C_p$ 
 Let's do Lasso:
 ```{r}
 library(glmnet)
-xmatrix= model.matrix(y ~ x + I(x^2) + I(x^3) + I(x^4) + 
+xmatrix = model.matrix(y ~ x + I(x^2) + I(x^3) + I(x^4) + 
                         I(x^5) + I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10), 
-                      data = data.frame(x=x,y=y))[, -1]
+                      data = data.frame(x = x, y = y))[, -1]
 
 # Cross-validation to select lambda
-lasso.cv1 = cv.glmnet(xmatrix, y1, alpha=1)
+lasso.cv1 = cv.glmnet(xmatrix, y1, alpha = 1)
 lasso.cv1$lambda.min
 plot(lasso.cv)
 
@@ -284,21 +286,21 @@ mean((pred - test$Apps)^2)
     
   (c) Fit a ridge regression model on the training set, with $\lambda$ chosen by 5-fold cross-validation. Report the test error obtained.
 ```{r}
-xtrain=model.matrix (Apps~.,training)
-ytrain=training$Apps
-xtest=model.matrix (Apps~.,test)
-ytest=test$Appscv
+xtrain = model.matrix (Apps~., training)
+ytrain = training$Apps
+xtest = model.matrix (Apps~., test)
+ytest = test$Appscv
 #use 5-fold cv:
-cv.out=cv.glmnet (xtrain,ytrain,alpha =0, nfolds = 5)
+cv.out = cv.glmnet (xtrain, ytrain, alpha = 0, nfolds = 5)
 plot(cv.out)
-(bestlamda=cv.out$lambda.min)
+(bestlamda = cv.out$lambda.min)
 #modelfrom ridge regression
-ridge_rg = glmnet(xtrain,ytrain,alpha=0)
+ridge_rg = glmnet(xtrain, ytrain, alpha = 0)
 #test error
 #Fitting trainning model on test set
-ridge_pred <- predict(ridge_rg, s=bestlamda, newx = xtest)
+ridge_pred <- predict(ridge_rg, s = bestlamda, newx = xtest)
 #Calculating test error
-mean((ridge_pred-ytest)^2)
+mean((ridge_pred - ytest)^2)
 ```
 The chosen $\lambda$ is 327.8098 and the test error result from ridge regression model is 2079222.
     
@@ -306,21 +308,21 @@ The chosen $\lambda$ is 327.8098 and the test error result from ridge regression
   
 ```{r}
 #use 5-fold cv:
-cv.outlasso=cv.glmnet (xtrain,ytrain,alpha =1, nfolds = 5)
+cv.outlasso = cv.glmnet (xtrain, ytrain, alpha = 1, nfolds = 5)
 plot(cv.outlasso)
-(bestlamlasso=cv.outlasso$lambda.min)
+(bestlamlasso = cv.outlasso$lambda.min)
 #modelfrom lasso regression
-fit.lasso <- glmnet(xtrain,ytrain,alpha=1)
-lasso_rg = glmnet(xtrain,ytrain,alpha=1,lambda=bestlamlasso)
+fit.lasso <- glmnet(xtrain, ytrain, alpha = 1)
+lasso_rg = glmnet(xtrain, ytrain, alpha = 1, lambda = bestlamlasso)
 #the coefficient
 lasso_coef <- coef(lasso_rg)
 #test error
 #Fitting trainning model on test set
-lasso_pred=predict(fit.lasso, s=bestlamlasso,newx = xtest)
+lasso_pred = predict(fit.lasso, s = bestlamlasso, newx = xtest)
 #Calculating test error
 mean((lasso_pred - ytest)^2)
 #the number of non-zero coefficient estimates.
-predict(fit.lasso,type="coefficients",s=bestlamlasso)
+predict(fit.lasso, type = "coefficients", s = bestlamlasso)
 ```
 The chosen $\lambda$ is 1.749422 The test error is 1359773. There are 16 non-zero coefficient estimates (not including intercept).
 
