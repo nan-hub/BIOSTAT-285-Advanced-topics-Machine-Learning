@@ -25,7 +25,7 @@
 
 ### HW2:
 `Rmarkdown`
-- Linear Discriminant Analysis, Quadratic Discriminant Analysis and Logistic Regression
+- Perform Linear Discriminant Analysis, Quadratic Discriminant Analysis and Logistic Regression on `Auto` dataset to predict whether a given car gets high or low gas mileage. Compare the results from the three methods with confusion matrix.
 - Cubic splines and natural cubic splines
 
 ### HW3:
