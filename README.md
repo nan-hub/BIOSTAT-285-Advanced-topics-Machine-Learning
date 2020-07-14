@@ -17,8 +17,11 @@
 
 ### HW1:
 `Rmarkdown`
-- Variable selection
-- Test error from linear model, ridge regression and LASSO model
+- Perform variable selection according to C_p, BIC, and adjusted R^2 using forward stepwise selection and backward stepwise selection method
+- Fit Lasso model and use cross-validation method to select the optimal penalty coefficient 
+- Fit a linear model, a ridge regression model and a Lasso model to predict the number of college applications 
+- Report test error and R^2 to compare accuracy
+
 
 ### HW2:
 `Rmarkdown`
