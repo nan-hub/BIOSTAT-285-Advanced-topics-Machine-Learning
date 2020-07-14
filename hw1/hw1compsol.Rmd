@@ -69,7 +69,7 @@ lm1 <- lm(y ~ I(x) + I(x^2) + I(x^7), data = data.frame(x = x,y = y))
 summary(lm1)
 ```
 According to Cp, the model contains 3 predictors which are $X, X^2, X^7$
-The best models obtained according to $C_p$ is: $Y$ = 3.08 + 2.36 * $X$-3.17* $X^2$ + 0.01 * $X^7$
+The best models obtained according to $C_p$ is: $Y$ = 3.08 + 2.36 * $X$ - 3.17* $X^2$ + 0.01 * $X^7$
 
 ```{r}
 #BIC
@@ -82,7 +82,7 @@ lm2 <- lm(y ~ I(x) + I(x^2) + I(x^7), data = data.frame(x = x,y = y))
 summary(lm2) 
 ```
 According to BIC, the model contains 3 predictors which are $X, X^2, X^7$
-The best models obtained according to BIC is: $Y$ = 3.08 + 2.36 * $X$-3.17* $X^2$ + 0.01 * $X^7$
+The best models obtained according to BIC is: $Y$ = 3.08 + 2.36 * $X$ - 3.17* $X^2$ + 0.01 * $X^7$
 
 ```{r}
 #Adjusted R^2
@@ -96,7 +96,7 @@ summary(lm3)
 ```
 
 According to adjusted $R^2$, the model contains 3 predictors which are $X, X^2, X^7$
-The best models obtained according to adjusted $R^2$ is: $Y$ = 3.08 + 2.36 * $X$-3.17* $X^2$ + 0.01 * $X^7$
+The best models obtained according to adjusted $R^2$ is: $Y$ = 3.08 + 2.36 * $X$ - 3.17* $X^2$ + 0.01 * $X^7$
 
   (d) Repeat (c), using forward stepwise selection and also using backward stepwise selection. How does your answer compare to the results in (c)?
     
@@ -111,7 +111,8 @@ leaps1 <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) +
     
 ```{r}
 #Cp
-plot(1:10, summary1$cp, xlab = "Number of Parameters", ylab = "Cp", type = "l")
+plot(1:10, summary1$cp, xlab = "Number of Parameters", 
+     ylab = "Cp", type = "l")
 min_cp1 <- min(summary1$cp)
 points(c(1:10)[summary1$cp == min_cp1], min_cp1, pch = 1, col = "purple")
 ```
@@ -125,7 +126,8 @@ points(c(1:10)[summary1$bic == min_bic1], min_bic1, pch = 1, col = "purple")
 
 ```{r}
 #Adjusted R^2
-plot(1:10, summary1$adjr2, xlab = "Number of Parameters", ylab = "Adjusted R^2", type = "l")
+plot(1:10, summary1$adjr2, xlab = "Number of Parameters",
+      ylab = "Adjusted R^2", type = "l")
 max_adjr2_1 <- max(summary1$adjr2)
 points(c(1:10)[summary1$adjr2 == max_adjr2_1], max_adjr2_1, pch = 1, col = "purple")
 ```
@@ -164,7 +166,8 @@ points(c(1:10)[summaryback$bic == min_bicback], min_bicback, pch = 1, col = "pur
 plot(1:10, summaryback$adjr2, xlab = "Number of Parameters", ylab = "Adjusted R^2", 
      type = "l")
 max_adjr2_back <- max(summaryback$adjr2)
-points(c(1:10)[summaryback$adjr2 == max_adjr2_back], max_adjr2_back, pch = 1, col = "purple")
+points(c(1:10)[summaryback$adjr2 == max_adjr2_back], max_adjr2_back, 
+       pch = 1, col = "purple")
 ```
 
 Using backwards stepwise selection, the best model selected from $C_p$, BIC, and adjusted $R^2$ all contain 3 predictors which are $X, X^2, X^9$. Next let's report the coefficients:
@@ -207,8 +210,9 @@ First let's perform best subset selection.
 y1 <- 3 + 7 * x^7 + epsilon
 #best subsets
 library(leaps)
-sub_full <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6) + I(x^7) + I(x^8)
-                    + I(x^9) + I(x^10), data = data.frame(x = x, y = y1), nvmax = 10)
+sub_full <- regsubsets(y ~ x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + 
+                         I(x^6) + I(x^7) + I(x^8) + I(x^9) + I(x^10), 
+                       data = data.frame(x = x, y = y1), nvmax = 10)
 sub_summary <- summary(sub_full)
 ```
 
@@ -218,7 +222,8 @@ sub_summary <- summary(sub_full)
 #Cp
 plot(1:10, sub_summary$cp, xlab = "Number of Parameters", ylab = "Cp", type = "l")
 subset_min_cp <- min(sub_summary$cp)
-points(c(1:10)[sub_summary$cp == subset_min_cp], subset_min_cp, pch = 1, col = "purple")
+points(c(1:10)[sub_summary$cp == subset_min_cp], subset_min_cp, 
+       pch = 1, col = "purple")
 #report coefficient
 coef(sub_full, 2)
 ```
@@ -227,7 +232,8 @@ coef(sub_full, 2)
 #BIC
 plot(1:10, sub_summary$bic, xlab = "Number of Parameters", ylab = "BIC", type = "l")
 subset_min_bic <- min(sub_summary$bic)
-points(c(1:10)[sub_summary$bic == subset_min_bic], subset_min_bic, pch = 1, col = "purple")
+points(c(1:10)[sub_summary$bic == subset_min_bic], subset_min_bic, 
+       pch = 1, col = "purple")
 #report coefficient
 coef(sub_full, 1)
 ```
