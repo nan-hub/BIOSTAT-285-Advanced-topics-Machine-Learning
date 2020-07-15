@@ -37,7 +37,10 @@
 > Project 1
 - Fit SVMs with linear, radial and polynomial basis kernels to classify and predict whether a given car gets high or low gas mileage
 > Project 2
-- K-Means Clustering, PCA and MDS
+- Run K-Means Clustering on Gene dataset to separate Luminal A samples from Luminal B samples
+- Apply Pricipal Component Analysis(PCA) to obtain better clustering result
+- Apply Multidimensional Scaling(MDS) with `manhattan`, `minkowski`, and `canberra` metrics and non-metric MDS to get better 2-dimensional representations
+- Try to subtracting the approximation from the first PC to get better separation.
 
 ### HW4: 
 `python`
