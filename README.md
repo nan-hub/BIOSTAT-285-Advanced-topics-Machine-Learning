@@ -34,8 +34,9 @@
 
 ### HW3:
 `Rmarkdown`
-- Support vector classifier
-- SVMs with radial and polynomial basis kernels
+> Project 1
+- Fit SVMs with linear, radial and polynomial basis kernels to classify and predict whether a given car gets high or low gas mileage
+> Project 2
 - K-Means Clustering, PCA and MDS
 
 ### HW4: 
