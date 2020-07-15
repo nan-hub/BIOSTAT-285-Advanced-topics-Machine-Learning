@@ -44,5 +44,5 @@
 
 ### HW4: 
 `python`
-- Neural network with one hidden layer
+- Train the one hidden layer feed-forward neural network with backpropagation
 
