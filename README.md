@@ -25,8 +25,12 @@
 
 ### HW2:
 `Rmarkdown`
+> Project 1
 - Perform Linear Discriminant Analysis, Quadratic Discriminant Analysis and Logistic Regression on `Auto` dataset to predict whether a given car gets high or low gas mileage. Compare the results from the three methods with the confusion matrix.
-- Cubic splines and natural cubic splines
+> Project 2
+- Fit Cubic splines and natural cubic splines on Covid-19 dataset to analysis the increase of comfirmed cases in California, Washington and New York
+- Fit Smoothing Spline to predict the number of confirmed cases in California in 30 days
+
 
 ### HW3:
 `Rmarkdown`
