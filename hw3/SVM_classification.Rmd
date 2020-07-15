@@ -1,0 +1,109 @@
+---
+title: \textbf {BIOSTAT 285 Spring 2020 Project 3}
+subtitle: Use SVM approaches to predict whether a given car gets high or low gas mileage 
+author: "Nan Liu"
+output:
+  pdf_document: default
+  html_document: default
+urlcolor: blue      
+header-includes: \usepackage{amsgen,amsmath,amstext,amsbsy,amsopn,amssymb,mathabx,amsthm,bm,bbm}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\theoremstyle{definition}
+\newtheorem*{hint}{Hint}
+
+\theoremstyle{remark}
+\newtheorem*{rmk}{Remark}
+
+## SupportVector Approaches
+
+First let's import the data:
+```{r}
+library(ISLR)
+data(Auto)
+#mpgadd <- Auto$mpg
+```
+
+Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.
+  
+```{r}
+library(tidyverse)
+Auto <- Auto %>%
+  mutate (mpg01 = as.factor(ifelse(mpg > median(mpg), 1, 0)))
+```
+
+ 
+Fit a **support vector classifier** to the data with various values of `cost`, in order to predict whether a car gets high or low gas mileage.
+
+We tune the parameter `cost` and find the optimal value of `cost`:
+```{r}
+#install.packages("e1071")
+set.seed(1)
+library(e1071)
+library(caret)
+tunelinear <- tune(svm, mpg01 ~ ., data = Auto, 
+                     kernel = "linear",
+                     ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100)))
+summary(tunelinear)
+```
+
+
+  The optimal value of cost is 1 and the cross-validation error is 0.01025641 at this time. The cross-validation error is relatively small, so we conclude the model can predict whether a car gets high or low gas mileage pretty well.
+  
+## SVM with radial and polynomial basis kernels
+
+For **radial** kernal, we tune the parameter of `cost` and `gamma`:
+
+```{r}
+#radial kernal
+set.seed(1)
+tuneradial <- tune(svm, mpg01 ~ .,
+                   data = Auto, kernel = "radial",
+                 ranges = list(cost = c(0.1, 1, 10, 100),
+                               gamma = 1/nrow(Auto) * c(1,10,100)))
+summary(tuneradial)
+```
+
+When using the SVM with radial basis kernel, the optiaml value of `gamma` is 0.00255102 and the optimal value of `cost` is 100. The cross-validation error is 0.01282051 at this time.
+
+For **polynomial** kernal, we tune the parameter of `cost` and `gamma`:
+
+```{r}
+#polynomial
+set.seed(1)
+tunepoly <- tune(svm, mpg01 ~ .,
+                 data = Auto, kernel = "polynomial",
+                 ranges = list(cost = c(0.1, 1, 10, 100),
+                               gamma = 1/nrow(Auto) * c(1,10,100),
+                               degree = c(2, 3, 4)))
+summary(tunepoly)
+```
+
+When using the SVM with polynomial basis kernel, the optiaml value of `degree` is 3, the optimal value of `gamma` is 0.255102 and the optimal value of `cost` is 1.The cross-validation error is 0.55115385 at this time. 
+
+## Visualize
+
+```{r, fig.hold='hold', out.width="50%"}
+svm_lin <- svm(mpg01 ~ ., data=Auto, kernel="linear", cost = 1)
+svm_rad <- svm(mpg01 ~ ., data=Auto, kernel="radial", cost = 100, gamma=0.00255)
+svm_poly <- svm(mpg01 ~ ., data=Auto, kernel="polynomial", cost = 1, gamma=0.255, degree =3)
+
+
+plot(svm_lin, Auto, mpg~cylinders)
+plot(svm_lin, Auto, mpg~acceleration)
+
+plot(svm_rad, Auto, mpg~cylinders)
+plot(svm_rad, Auto, mpg~acceleration)
+
+plot(svm_poly, Auto, mpg~cylinders)
+plot(svm_poly, Auto, mpg~acceleration)
+```
+
+Compare the cross validation errors and the plots of the three method, we conclude that SVM with linear kernal fits the data best. there is evidence that linear kernel seems to fit the data the best. From the plots above, SVM using radial and polynomial kernel do not separate the two classes well.    
+
+  
+    
+  
