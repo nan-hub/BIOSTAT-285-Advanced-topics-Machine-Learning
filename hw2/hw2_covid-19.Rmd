@@ -1,0 +1,269 @@
+---
+title: \textbf {BIOSTAT 285 Spring 2020 Covid-19 State Data Project}
+author: "Nan Liu"
+output:
+  pdf_document: default
+  html_document: default
+urlcolor: blue    
+header-includes: \usepackage{amsgen,amsmath,amstext,amsbsy,amsopn,amssymb,mathabx,amsthm,bm,bbm}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis on New York Times Covid-19 State Data
+
+**Import and Subset data**
+First let's import the `covid-19-state-level-data.csv` dataset and create subsets of the data for States New York, California, and Washington.
+```{r}
+#import csv file
+library(tidyverse)
+covid <- read.csv("covid-19-state-level-data.csv")
+#subset new york
+ny <- filter(covid, state == "New York")
+dim(ny)
+head(ny,6)
+```
+
+
+```{r}
+#california
+ca <- filter(covid, state == "California") 
+dim(ca)
+head(ca,6)
+```
+
+```{r}
+#washington
+wa <- filter(covid, state == "Washington") 
+dim(wa)
+head(wa,6)
+```
+ 
+**Cubic Splines and Natural Cubic Splines**
+
+Fit both cubic splines and natural cubic splines on each state subset, with the number of cases as response, and the number of days since first case as predictor. Find the optimal degrees of freedom (`df`) for the basis. 
+  
+```{r}
+#generate the number of days since first case
+ny <- ny %>%
+  mutate(days = as.numeric(as.Date(as.character(date))-
+                  as.Date(as.character("2020-03-01"))))
+ca <- ca %>%
+  mutate(days = as.numeric(as.Date(as.character(date))-
+                  as.Date(as.character("2020-01-25"))))
+wa <- wa %>%
+  mutate(days = as.numeric(as.Date(as.character(date))-
+                  as.Date(as.character("2020-01-21"))))
+```
+
+**Washington with cubic splines:** 
+```{r}
+library(splines)
+dfs <- (3 : 20)
+errors <- c()
+for (i in dfs){
+fit <- lm(cases ~ bs(days, df = i), data = wa)
+errors <- c(errors, sum(fit$residuals^2))
+}
+plot(dfs, errors, main = "Washington, cubic splines")
+```
+
+From the plot we see, when the df is lower than 7, the errors are quite large. If df is greater than 7, the error will not change much. So we conclude that for Washington dataset, the optimal degree of freedom in cubic spline method is 7.
+
+Then fit the cubic splines with df = 7 on Washington data.
+
+```{r}
+bs.fit.wa <- lm(cases ~ bs(days, df = 7), data = wa)
+plot(wa$days, wa$cases, main = ("Optimal df = 7"))
+lines(wa$days, (bs.fit.wa$fitted.values))
+```
+
+**Washington with natural cubic splines:**
+
+```{r}
+errors <- c()
+for (i in dfs){
+fit <- lm(cases ~ ns(days, df = i), data = wa)
+errors <- c(errors, sum(fit$residuals^2))
+}
+plot(dfs, errors, main = "Washington, Natural Cubic Splines")
+```
+
+We conclude that the optimal df is 5.
+
+Then fit the natural cubic splines with df = 5 on Washington data.
+
+```{r}
+ns.fit.wa <- lm(cases ~ ns(days, df = 5), data = wa)
+plot(wa$days, wa$cases, main = ("Optimal df = 5"))
+lines(wa$days, (ns.fit.wa$fitted.values))
+```
+
+
+**California with cubic splines:** 
+```{r}
+library(splines)
+#bs 
+dfs <- (3 : 20)
+errors <- c()
+for (i in dfs){
+fit <- lm(cases ~ bs(days, df = i), data = ca)
+errors <- c(errors, sum(fit$residuals^2))
+}
+plot(dfs, errors, main = "California, cubic splines")
+```
+
+From the plot we see, when the df is lower than 10, the errors are quite large. If df is greater than 10, the error will not change much. So we conclude that for California dataset, the optimal degree of freedom in cubic spline method is 11.
+
+Then fit the cubic splines with df = 10 on California data.
+
+```{r}
+bs.fit.ca <- lm(cases ~ bs(days, df = 10), data = ca)
+plot(ca$days, ca$cases, main = ("Optimal df = 10"))
+lines(ca$days, (bs.fit.ca$fitted.values))
+```
+
+**California with natural cubic splines:**
+
+```{r}
+errors <- c()
+for (i in dfs){
+fit <- lm(cases ~ ns(days, df = i), data = ca)
+errors <- c(errors, sum(fit$residuals^2))
+}
+plot(dfs, errors, main = "California, Natural Cubic Splines")
+```
+
+We conclude that the optimal df is 9.
+
+Then fit the natural cubic splines with df = 9 on California data.
+
+```{r}
+ns.fit.ca <- lm(cases ~ ns(days, df = 9), data = ca)
+plot(ca$days, ca$cases, main = ("Optimal df = 9"))
+lines(ca$days, (ns.fit.ca$fitted.values))
+```
+    
+
+**New York with cubic splines:** 
+```{r}
+library(splines)
+#bs 
+dfs <- (3 : 20)
+errors <- c()
+for (i in dfs){
+fit <- lm(cases ~ bs(days, df = i), data = ny)
+errors <- c(errors, sum(fit$residuals^2))
+}
+plot(dfs, errors, main = "New York, cubic splines")
+```
+
+From the plot we see, when the df is lower than 5, the errors are quite large. If df is greater than 5, the error will not change much. So we conclude that for New York dataset, the optimal degree of freedom in cubic spline method is 5.
+
+Then fit the cubic splines with df = 5 on New York data.
+
+```{r}
+bs.fit.ny <- lm(cases ~ bs(days, df = 5), data = ny)
+plot(ny$days, ny$cases, main = ("Optimal df = 5"))
+lines(ny$days, (bs.fit.ny$fitted.values))
+```
+
+**New York with natural cubic splines:**
+
+```{r}
+errors <- c()
+for (i in dfs){
+fit <- lm(cases ~ ns(days, df = i), data = ny)
+errors <- c(errors, sum(fit$residuals^2))
+}
+plot(dfs, errors, main = "New York, Natural Cubic Splines")
+```
+
+We conclude that the optimal df is 5.
+
+Then fit the natural cubic splines with df = 5 on New York data.
+
+```{r}
+ns.fit.ny <- lm(cases ~ ns(days, df = 5), data = ny)
+plot(ny$days, ny$cases, main = ("Optimal df = 5"))
+lines(ny$days, (ns.fit.ny$fitted.values))
+```
+ 
+## Compare different splines in different state
+
+We plot the observed data, cubic splines and natural cubic splines.
+
+```{r, echo=FALSE, fig.height = 3.5, fig.width = 10}
+par(mfrow = c(1,3))
+n1 = nrow(wa)
+days <- 1:n1
+plot(days, wa$cases, main = "Washington")
+lines(days, bs.fit.wa$fitted.values, col = "red")
+lines(days, ns.fit.wa$fitted.values, col = "green")
+
+n1 = nrow(ny)
+days <- 1:n1
+plot(days, ny$cases, main = "NY")
+lines(days, bs.fit.ny$fitted.values, col = "red")
+lines(days, ns.fit.ny$fitted.values, col = "green")
+
+
+n1 = nrow(ca)
+days <- 1:n1
+plot(days, ca$cases, main = "California")
+lines(days, bs.fit.ca$fitted.values, col = "red")
+lines(days, ns.fit.ca$fitted.values, col = "green")
+
+```
+
+We conclude that the cubic spline and natural cubic spline are quite similar after we chose the optimal degree of freedom. From the plot we know the cubic splines and natural cubic splines can both describe the model pretty well on the 3 subsets.
+  
+## Predict New York cases  
+  
+```{r echo=FALSE}
+n1 = nrow(ny)
+days <- 1:n1
+plot(days, ny$cases, main = "NY")
+
+lines(days, bs.fit.ca$fitted.values[days], col = "red")
+lines(days, ns.fit.ca$fitted.values[days], col = "blue")
+
+lines(days, bs.fit.wa$fitted.values[days], col = "red", lty = 2)
+lines(days, ns.fit.wa$fitted.values[days], col = "blue", lty = 2)
+legend("topleft", legend = c("California", "Washington"), col = c("red","blue"), cex = 0.8, pch = 1)
+```
+
+From the plot we see none of the predictions are good. The predictions are not good because New York has far more cases than those in California and Washington. Also, the growth rate of cases in New York is much higher than those of the other 2 states.
+
+## Smoothing Spline for California and Predict
+  
+```{r}
+## develop a model
+smooth.fit <- smooth.spline(x =ca[,"days"], 
+                            y = ca[,"cases"], w = NULL, cv = FALSE)
+cafit <- data.frame(days = ca$days)
+cafitcases <- predict(smooth.fit, x = ca$days)
+cafit$cases <- cafitcases$y
+
+capred<- data.frame(days = 94:125)
+predcases <- predict(smooth.fit, x = c(94:125))
+capred$cases <- predcases$y
+
+## plot the data
+p1 <- ggplot(ca, aes(x = days, y=cases)) +
+  geom_line() +
+  geom_point(colour = "gray") +
+  geom_hline(aes(yintercept=0)) +
+  geom_line(color="red", data=capred) +
+  geom_line(color="green", data=cafit) +
+  labs(title = "Predict number of cases in California")
+print(p1)
+```
+
+The gray dots are observed data, the green line is fitted line and the red line is extrapolation. In the first 50 days since the first case, the increasing rate of the number of cases is quite low. After 50 days since the first case, the number of cases increases very fast. 
+
+The extrapolation of smoothing splines is linear, which avoids erratic predictions in most cases.
+
+
